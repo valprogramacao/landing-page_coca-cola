@@ -7,6 +7,11 @@
     font-family: "Poppins", sans-serif;
 }
 
+/* trava a rolagem da página enquanto o menu mobile está aberto (classe colocada pelo script.js) */
+body.menu-open {
+    overflow: hidden;
+}
+
 section {  /* fundo preto*/
     position: relative;
     width: 100%;
@@ -47,10 +52,15 @@ header .logo {
 
 header .navigation {
     position: relative;
-    display: flex;
 }
 
-header ,.navigation li {
+/* MENU EM LINHA: o flex precisa estar no <ul>, que é o pai direto dos <li> */
+header .navigation ul {
+    display: flex;
+    gap: 100px; /* espaço entre os itens (substitui o margin-left) */
+}
+
+header .navigation li {
     list-style: none;
 }
 
@@ -60,8 +70,11 @@ header .navigation li a {
     font-weight: 500;
     text-decoration: none;
     font-size: 17px;
-    margin-left: 100px;
+    transition: color 0.3s;
+}
 
+header .navigation li a:hover {
+    color: #e51e2a;
 }
 
 .content {
@@ -117,7 +130,7 @@ header .navigation li a {
     left: 100px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 45px; /* espaço entre os ícones (substitui o margin-left) */
 }
 
 .icons li {
@@ -125,16 +138,14 @@ header .navigation li a {
 }
 
 .icons li a {
-    display: inline-block;
     width: 50px;
     height: 50px;
     border-radius: 50%;
     background: #222;
-    margin-left: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
 }
 .icons li a:hover {
     background: #e51e2a;
@@ -142,13 +153,15 @@ header .navigation li a {
 }
 .icons li a img {
     transform: scale(0.5);
-     filter: invert(1);
+    filter: invert(1);
 }
 
 .boxImg {
     position: absolute;
     right: 0;
     bottom: -40px;
+    display: flex;          /* evita que as garrafas quebrem de linha */
+    align-items: flex-end;  /* todas apoiadas na mesma base */
 }
 .boxImg img{
     width: 165px;
@@ -166,13 +179,14 @@ header .navigation li a {
     transform: rotate(-15deg)
 }
 
+/* botão hambúrguer: escondido no desktop */
 .menu {
     display: none;
     flex-direction: column;
     cursor: pointer;
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 24px;
+    right: 30px;
     z-index: 1001;
 }
 
@@ -184,25 +198,109 @@ header .navigation li a {
     transition: 0.4s ;
 }
 
-@media(max-width:700px){
-    header .navigation ul {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    padding: 80px;
-    margin: 0;
-    z-index: 1000;
+
+/* =========================================================
+   RESPONSIVO
+   A ideia é a mesma em todos os tamanhos (fundo escuro, círculo
+   vermelho no canto, texto + garrafas); só vamos reorganizando
+   e diminuindo as coisas conforme a tela encolhe.
+   ========================================================= */
+
+/* ---------- 1) Notebook / tablet deitado (até 1200px) ----------
+   Texto e garrafas continuam lado a lado, só que menores. */
+@media (max-width: 1200px) {
+    section {
+        padding: 100px 50px;
     }
 
+    header {
+        padding: 40px 50px;
+    }
 
+    header .navigation ul {
+        gap: 50px;
+    }
+
+    .content .text {
+        max-width: 450px;
+    }
+
+    .content .text h2 span {
+        font-size: 2.6em;
+    }
+
+    .boxImg img {
+        width: 115px;
+    }
+
+    .icons {
+        left: 50px;
+    }
+}
+
+/* ---------- 2) Tablet em pé (até 900px) ----------
+   Não cabe mais lado a lado: o conteúdo vira uma coluna
+   (texto -> ícones -> garrafas), e as garrafas descem para
+   o rodapé, em cima do círculo vermelho. */
+@media (max-width: 900px) {
+    section {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 160px 50px 0;
+    }
+
+    .circle {
+        clip-path: circle(55% at bottom right);
+    }
+
+    header .navigation ul {
+        gap: 35px;
+    }
+
+    .content .text {
+        max-width: 100%;
+        margin-right: 0;
+    }
+
+    .content .text h2 span {
+        font-size: 3em;
+    }
+
+    /* ícones saem do "absolute" e entram no fluxo, logo abaixo do botão */
+    .icons {
+        position: relative;
+        left: 0;
+        bottom: 0;
+        margin-top: 40px;
+        gap: 20px;
+    }
+
+    /* garrafas também entram no fluxo e vão para o fim da seção */
+    .boxImg {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        justify-content: center;
+        margin-top: auto;     /* empurra para baixo */
+        padding-top: 60px;
+        margin-bottom: -40px; /* corta a base, como no desktop */
+    }
+
+    .boxImg img {
+        width: 25%;           /* 4 garrafas = 100% da largura */
+        max-width: 165px;
+    }
+}
+
+/* ---------- 3) Celular (até 700px) ----------
+   Menu vira hambúrguer + tela cheia, e tudo fica mais compacto. */
+@media (max-width: 700px) {
     .menu {
         display: flex;
-
     }
+
     .menu.active .bar:nth-child(1){
         transform: rotate(45deg) translate(8px, 8px);
     }
@@ -213,25 +311,39 @@ header .navigation li a {
 
     .menu.active .bar:nth-child(3) {
         transform: rotate(-45deg) translate(8px, -8px);
+    }
 
+    /* menu em tela cheia: fica sempre "montado", mas invisível,
+       para a abertura ter animação (display: none não anima) */
+    header .navigation ul {
+        flex-direction: column;
+        gap: 30px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        padding: 100px 40px;
+        background-color: #121212;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: opacity 0.4s, transform 0.4s, visibility 0.4s;
     }
 
     header .navigation ul.active {
-        display: flex;
-        background-color: #121212;
-        transition: .5s;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
     }
 
-    header .navigation ul li {
-        margin: 20px 0;
-    }
     header .navigation ul li a {
-        margin-left: 0;
-        font-size: 20px;
+        font-size: 22px;
     }
 
     section {
-        padding: 120px 30px;
+        padding: 120px 30px 0;
     }
 
     header {
@@ -250,17 +362,29 @@ header .navigation li a {
         font-size: 14px;
     }
 
-    .boxImg img {
-        width: 95px;
+    .content .text a {
+        margin-top: 30px;
     }
+
     .icons {
-        left: -25px;
-        bottom: 40px;
-        flex-direction: column;
+        margin-top: 30px;
         gap: 15px;
     }
+
     .icons li a {
         width: 40px;
         height: 40px;
+    }
+
+    .circle {
+        clip-path: circle(60% at bottom right);
+    }
+
+    /* garrafas ocupam a largura toda da tela (ignorando o padding) */
+    .boxImg {
+        width: calc(100% + 60px);
+        margin-left: -30px;
+        padding-top: 40px;
+        margin-bottom: -30px;
     }
 }
